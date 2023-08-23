@@ -21,10 +21,20 @@ def tomorseaudio():
 
 @app.route("/sendmorse")
 def morse_stream():
+    to = request.args.get("to", "")
+    from_ = request.args.get("from", "")
     base_url = request.base_url
     stream_url = f"{base_url}/static/output.ogg"
-    make_vonage_call(client, stream_url)
-    return "audio morse code sent"
+    if to and from_:
+        client = create_vonage_api_client()
+        make_vonage_call(client, to=to, from_=from_, stream_url=stream_url)
+        return "audio morse code sent", 200
+    return "Query parameter 'to' and 'from' should be a valid phone number", 400
+
+
+@app.route("/answered")
+def call_answered():
+    return "call is answered"
 
 
 if __name__ == '__main__':
